@@ -13,4 +13,4 @@ export const Logo = styled.span<LogoProps>`
   margin-left: ${(props) => props.marginleft || "0px"};
   margin-bottom: ${(props) => props.marginbottom || "10px"};
   color: #fff;
-`
+}`;
