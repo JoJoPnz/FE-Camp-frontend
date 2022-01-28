@@ -34,6 +34,9 @@ const Example = () => {
   return (
     <div className="App">
       <header className="App-header">
+        <Button shadow={false} outline={false} onClick={() => clientInstance.postLogin()}>
+          Log In
+        </Button>
         <Button shadow={false} outline={false} onClick={() => omiseInstance.createOmiseToken(10000, setToken)}>
           Create Token
         </Button>

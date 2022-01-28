@@ -135,10 +135,19 @@ const genCode = async (
 const verifyCode = async (code: string) => {
   const res = await client.post(`/shop/verify/${code}`)
   console.log(res)
+  return res
 }
 
 const testAPI = async () => {
   const res = await client.get("/")
+  console.log(res)
+}
+
+const postLogin = async () => {
+  const res = await client.post("/auth/login", {
+    "email": "superadmin@gmail.com",
+    "password": "adminadmin"
+  })
   console.log(res)
 }
 
@@ -147,6 +156,7 @@ const clientInstance = {
   checkout,
   genCode,
   verifyCode,
+  postLogin,
 }
 
 export default clientInstance
