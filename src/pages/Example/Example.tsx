@@ -2,6 +2,7 @@ import React from "react"
 import logo from "../../assets/logo.svg"
 import AlertButton from "../../components/AlertButton/AlertButton"
 import { Button } from "../../components/Buttons/Button"
+import Navbar from "../../components/Navbar/Navbar"
 import { default as axiosInstance, default as clientInstance } from "../../utils/client"
 import { PaymentTypes, PromotionCodeType } from "../../utils/enums"
 import omiseInstance from "../../utils/omise"
@@ -32,6 +33,7 @@ const Example = () => {
   const [source, setSource] = React.useState<object>({})
   const [code, setCode] = React.useState<string>("")
   return (
+    
     <div className="App">
       <header className="App-header">
         <Button shadow={false} outline={false} onClick={() => clientInstance.postLogin()}>

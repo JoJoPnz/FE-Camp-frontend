@@ -16,7 +16,6 @@ function App() {
   setUpOmise()
   return (
     <>
-
       <Navbar isLogin={true} />
       <PageContainer>
         <Routes>
