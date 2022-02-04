@@ -8,6 +8,7 @@ import ProductListV2 from "../../components/Product_list/ProductListv2"
 import axiosInstance from "../../utils/client"
 import { PaymentTypes } from "../../utils/enums"
 import { setUpOmise } from "../../utils/omise"
+import { Button } from "../../components/Buttons/Button"
 import "./Payment.css"
 
 interface Basket {
@@ -534,8 +535,8 @@ function Payment() {
       <div style={{ paddingTop: "50px", paddingRight: "20px" }}>
         <ProductListV2 bookList={book}></ProductListV2>
         <form>
-          <button type="submit" id="credit-card" form="myform">
-            จ่ายผ่านบัตรเครดิต
+          <button type="submit" id="credit-card" form="myform" style={{paddingTop:"20px"}}>
+            <Button width="454" bg="white" textColor="linear-gradient(93.44deg, #af3b43 100%, #ea727f 100%)" outline={false} shadow form = "myfrom">ยืนยันและไปชำระเงิน</Button>
           </button>
         </form>
       </div>
