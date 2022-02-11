@@ -186,10 +186,11 @@ function Payment() {
   // ---------------------------------------------------------
   const [token, setToken] = React.useState<object>({})
   const [source , setSource] = React.useState<object>({})
-  const [payWith , setPayWith] = useState("")
   const [checkCreditCard , setCheckCreditCard] = useState(false)
   const [checkPrompay , setCheckPrompay] = useState(false)
   const [checkBank , setCheckBank] = useState(false)
+  const basket = [{ productId: 1, quantity: 1 }]
+  const [amount , setAmount] = useState(0)
   const [values, setValues] = useState({
     firstName: "",
     lastName: "",
@@ -308,9 +309,14 @@ function Payment() {
     }
   }, [isUseOldAddress, values.address, values.subdistrict, values.district, values.province, values.postcode])
 
+  const getData = (price:number)=>{
+    setAmount(price)
+  }
+
 
   // -------------------omise handle-----------------
 
+  
   function omiseConfigure() {
     window.OmiseCard.configure({
       publicKey: "pkey_test_5qkz65yd4xjeimitf5x",
@@ -367,17 +373,15 @@ function Payment() {
 
   async function omiseResiveToken(setToken: (token: object) => void) {
     await window.OmiseCard.open({
-      amount: 50000,
+      amount: amount,
       onCreateTokenSuccess: async (tokenId: string) => {
         console.log(tokenId)
 
         const token = {
           id: tokenId,
-          amount: 50000,
+          amount: amount,
           type: PaymentTypes.card,
         }
-
-        const basket = [{ productId: 1, quantity: 1 }]
 
         setToken(token)
         await axiosInstance.checkout(token, PaymentTypes.cardEndpoint, values, basket)
@@ -396,14 +400,12 @@ function Payment() {
     }
     else if (checkPrompay){
       setUpOmise()
-      omiseInstance.createSourceOmise(10000, "promptpay", setSource)
-      const basket = [{ productId: 1, quantity: 1 }]
+      omiseInstance.createSourceOmise(amount, "promptpay", setSource)
       axiosInstance.checkout(source, PaymentTypes.promptPayEndpoint, values, basket)
     }
     else if (checkBank){
       setUpOmise()
-      omiseInstance.createSourceOmise(10000, "internet_banking_scb", setSource)
-      const basket = [{ productId: 1, quantity: 1 }]
+      omiseInstance.createSourceOmise(amount, "internet_banking_scb", setSource)
       const res = await axiosInstance.checkout(source, PaymentTypes.eBankEndpoint, values, basket)
       window.open(res.authorize_uri, "_blank")
     }
@@ -596,7 +598,7 @@ function Payment() {
          </div>
       </div>
       <div style={{ paddingTop: "50px", paddingRight: "20px" }}>
-        <ProductListV2 bookList={book}></ProductListV2>
+        <ProductListV2 bookList={book} hookPrice={getData}></ProductListV2>
         <form>
           <button type="submit" id="credit-card" form="myform" style={{paddingTop:"20px"}}>
             <Button width="454" bg="white" textColor="linear-gradient(93.44deg, #af3b43 100%, #ea727f 100%)" outline={false} shadow form = "myfrom">ยืนยันและชำระเงินผ่าน</Button>
@@ -787,7 +789,7 @@ function Payment() {
         </div>
       </div>
       <div style={{ paddingTop: "50px", paddingRight: "20px" }}>
-        <ProductListV2 bookList={book}></ProductListV2>
+        
         <form>
           <button type="button" id="credit-card" onClick={payWithCreditCard}>
             จ่ายเงิน

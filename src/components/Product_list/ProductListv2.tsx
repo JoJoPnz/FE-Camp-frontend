@@ -225,10 +225,11 @@ interface ProductListProps {
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
     shipping?: number
     bookList: Book[];
+    hookPrice:(a:number)=>void
 
 }
 
-const ProductListV2: React.FC<ProductListProps> = ({ onClick, shipping, bookList }) => {
+const ProductListV2: React.FC<ProductListProps> = ({ onClick, shipping, bookList, hookPrice }) => {
     const [promotion_code, setPromotionCode] = useState(" ")
     const [useCode, setUsed] = useState(false)
     const [quantity, setQuantity] = useState()
@@ -322,6 +323,7 @@ const ProductListV2: React.FC<ProductListProps> = ({ onClick, shipping, bookList
         }
 
         if(p<0) p=0;
+        hookPrice(p*100)
         return p
     }
 
