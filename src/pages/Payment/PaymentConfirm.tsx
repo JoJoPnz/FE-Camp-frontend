@@ -5,6 +5,8 @@ import { BsCheckCircle } from "react-icons/bs"
 import { AiOutlineCheck } from "react-icons/ai"
 import { FaCheckCircle } from "react-icons/fa"
 import "./PaymentConfirm.css"
+import { Icon } from '@iconify/react';
+import { Button } from "../../components/Buttons/Button"
 
 const PaymentComponentBackground = styled.div`
   box-sizing: border-box;
@@ -30,7 +32,7 @@ const Header = styled.h1`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 10px;
   color: #ffffff;
 `
 
@@ -38,15 +40,16 @@ function PaymentConfirm() {
   return (
     <PaymentComponentBackground className="responsive-box">
       <div>
-        <div style={{ display:'flex', justifyContent:'center', paddingTop:'64px'}}>
-          <MdStore size={"10rem"} color="white"  />
+        <div style={{ display:'flex', justifyContent:'center', paddingTop:'30px'}}>
+        
+        <Icon icon="mdi:store-check" style={{fontSize:'200px', color:'white'}}/>
         </div>
       </div>
 
       <Header>สั่งซื้อเรียบร้อย</Header>
-      <div style={{ display: "flex", marginTop: "46px", justifyContent: "center" , paddingBottom:"20px"}}>
-        <h1 style={{ marginRight: "90px" }}>ไปหน้าข้อมูลผู้ใช้</h1>
-        <h1>กลับหน้าหลัก</h1>
+      <div style={{ display: "flex", marginTop: "37px", justifyContent: "center" , paddingBottom:"20px"}}>
+        <p style={{marginRight:"18px"}}><Button width="207" textColor="white" outline shadow={false}>ไปหน้าข้อมูลผู้ใช้</Button></p>
+        <Button width="207" bg="white" textColor="linear-gradient(93.44deg, #af3b43 100%, #ea727f 100%)" outline={false} shadow>กลับหน้าหลัก</Button>
       </div>
     </PaymentComponentBackground>
   )
