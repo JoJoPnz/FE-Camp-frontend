@@ -9,6 +9,7 @@ import axiosInstance from "../../utils/client"
 import { PaymentTypes } from "../../utils/enums"
 import { setUpOmise } from "../../utils/omise"
 import { Button } from "../../components/Buttons/Button"
+import omiseInstance from "../../utils/omise"
 import "./Payment.css"
 
 interface Basket {
@@ -184,6 +185,11 @@ function Payment() {
   const [zipCode, setZipCode] = useState("")
   // ---------------------------------------------------------
   const [token, setToken] = React.useState<object>({})
+  const [source , setSource] = React.useState<object>({})
+  const [payWith , setPayWith] = useState("")
+  const [checkCreditCard , setCheckCreditCard] = useState(false)
+  const [checkPrompay , setCheckPrompay] = useState(false)
+  const [checkBank , setCheckBank] = useState(false)
   const [values, setValues] = useState({
     firstName: "",
     lastName: "",
@@ -302,6 +308,7 @@ function Payment() {
     }
   }, [isUseOldAddress, values.address, values.subdistrict, values.district, values.province, values.postcode])
 
+
   // -------------------omise handle-----------------
 
   function omiseConfigure() {
@@ -381,15 +388,65 @@ function Payment() {
     })
   }
 
-  async function payWithCreditCard(event: any) {
+  async function pay(event: any) {
     event.preventDefault()
-    setUpOmise()
-    omiseResiveToken(setToken)
+    if(checkCreditCard){
+      setUpOmise()
+      omiseResiveToken(setToken)
+    }
+    else if (checkPrompay){
+      setUpOmise()
+      omiseInstance.createSourceOmise(10000, "promptpay", setSource)
+      const basket = [{ productId: 1, quantity: 1 }]
+      axiosInstance.checkout(source, PaymentTypes.promptPayEndpoint, values, basket)
+    }
+    else if (checkBank){
+      setUpOmise()
+      omiseInstance.createSourceOmise(10000, "internet_banking_scb", setSource)
+      const basket = [{ productId: 1, quantity: 1 }]
+      const res = await axiosInstance.checkout(source, PaymentTypes.eBankEndpoint, values, basket)
+      window.open(res.authorize_uri, "_blank")
+    }
   }
+
+  // async function payWithCreditCard(event: any) {
+  //   event.preventDefault()
+  //   if(isFormComplete){
+  //     setUpOmise()
+  //     omiseResiveToken(setToken)
+  //   }
+    
+  // }
+
+  // async function payWithPrompay(event: any) {
+  //   event.preventDefault()
+  //   if(isFormComplete){
+  //     setUpOmise()
+  //     omiseInstance.createSourceOmise(10000, "promptpay", setSource)
+  //     const basket = [{ productId: 1, quantity: 1 }]
+  //     axiosInstance.checkout(source, PaymentTypes.promptPayEndpoint, values, basket)
+  //   }
+  // }
+
+  function payWithCreditCard(event: any){
+    setCheckBank(false)
+    setCheckCreditCard(true)
+    setCheckPrompay(false)
+  }
+  function payWithPrompay(event: any){
+    setCheckBank(false)
+    setCheckCreditCard(false)
+    setCheckPrompay(true)
+  }
+  function payWithBank(event: any){
+    setCheckBank(true)
+    setCheckCreditCard(false)
+    setCheckPrompay(false)
+  }
+
 
   return (
     <PaymentComponentBackground style={{ display: "inline-flex" }}>
-      <form></form>
       <div style={{ padding: "46px 20px", width: "75%" }}>
         <div>
           <div style={{ overflow: "auto" }}>
@@ -399,7 +456,7 @@ function Payment() {
             <Header>ข้อมูลผู้ซื้อ</Header>
             {<RiArrowDropDownLine style={{ float: "right", display: "inline-flex" }} color="white" size={"3.7rem"} />}
           </div>
-          <ReuseForm onChange={onChange} onSubmit={payWithCreditCard} values={values} ids={"myform"} />
+          <ReuseForm onChange={onChange} onSubmit={pay} values={values} ids={"myform"} />
         </div>
 
         <div style={{ overflow: "auto" }}>
@@ -490,12 +547,12 @@ function Payment() {
           </form>
         </div>
 
-        <div style={{ marginTop: "77px" }}>
+        <div style={{ overflow: "auto", marginTop:"50px"}}>
           <WhiteCircle>
             <Number>3</Number>
           </WhiteCircle>
           <Header>การชำระเงิน</Header>
-          {<RiArrowDropDownLine style={{ marginRight: "auto", marginLeft: "67%", display: "inline-flex" }} color="white" size={"3.7rem"} />}
+          {<RiArrowDropDownLine style={{ float: "right", display: "inline-flex" }} color="white" size={"3.7rem"} />}
           <form action="">
             <div>
               <div>
@@ -504,6 +561,8 @@ function Payment() {
                   type="radio"
                   name="selectPayment"
                   style={{ marginRight: "17px", marginTop: "20px" }}
+                  onClick={payWithPrompay}
+                  checked={checkPrompay}
                 />
                 <WhiteLabel style={{ marginRight: "112px" }}>พร้อมเพย์</WhiteLabel>
               </div>
@@ -513,7 +572,9 @@ function Payment() {
                   className="form-check-input appearance-none rounded-full h-4 w-4 border border-red-900 border-2 bg-red-300 checked:bg-red-900 checked:border-blue-100 checked:border-2 cursor-pointer"
                   type="radio"
                   name="selectPayment"
+                  onClick={payWithCreditCard}
                   style={{ marginRight: "17px", marginTop: "20px" }}
+                  checked={checkCreditCard}
                 />
 
                 <WhiteLabel>บัตรเครดิต/เดบิต</WhiteLabel>
@@ -525,18 +586,20 @@ function Payment() {
                   type="radio"
                   name="selectPayment"
                   style={{ marginRight: "17px", marginTop: "20px" }}
+                  onClick={payWithBank}
+                  checked={checkBank}
                 />
                 <WhiteLabel>โอนผ่านธนาคาร</WhiteLabel>
               </div>
             </div>
-          </form>
-        </div>
+          </form> 
+         </div>
       </div>
       <div style={{ paddingTop: "50px", paddingRight: "20px" }}>
         <ProductListV2 bookList={book}></ProductListV2>
         <form>
           <button type="submit" id="credit-card" form="myform" style={{paddingTop:"20px"}}>
-            <Button width="454" bg="white" textColor="linear-gradient(93.44deg, #af3b43 100%, #ea727f 100%)" outline={false} shadow form = "myfrom">ยืนยันและไปชำระเงิน</Button>
+            <Button width="454" bg="white" textColor="linear-gradient(93.44deg, #af3b43 100%, #ea727f 100%)" outline={false} shadow form = "myfrom">ยืนยันและชำระเงินผ่าน</Button>
           </button>
         </form>
       </div>
